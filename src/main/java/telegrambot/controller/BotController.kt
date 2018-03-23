@@ -1,0 +1,6 @@
+
+class BotController {
+    fun ping() {
+
+    }
+}
