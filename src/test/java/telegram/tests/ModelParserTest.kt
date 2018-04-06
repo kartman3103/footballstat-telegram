@@ -76,13 +76,13 @@ class ModelParserTest {
     }
 
     @Test
-    fun messageWithoutUserTest() {
-        val message = modelParser.parseMessage("{\"message_id\":5,\"from\":{\"id\":414309712,\"is_bot\":false,\"first_name\":\"Pavel\",\"last_name\":\"Demin\",\"language_code\":\"ru\"},\"chat\":{\"id\":414309712,\"first_name\":\"Pavel\",\"last_name\":\"Demin\",\"type\":\"private\"},\"date\":1523021455,\"text\":\"/getUpdates\",\"entities\":[{\"offset\":0,\"length\":11,\"type\":\"bot_command\"}]}},{\"update_id\":540766783,\n" +
-                "\"message\":{\"message_id\":6,\"from\":{\"id\":414309712,\"is_bot\":false,\"first_name\":\"Pavel\",\"last_name\":\"Demin\",\"language_code\":\"ru\"},\"chat\":{\"id\":414309712,\"first_name\":\"Pavel\",\"last_name\":\"Demin\",\"type\":\"private\"},\"date\":1523026221,\"text\":\"/\"}}")
+    fun messageNullTest() {
+        val message = modelParser.parseMessage(null)
+        Assert.assertNull(message)
     }
 
     @Test
-    fun messageNullTest() {
+    fun messageWithoutUserTest() {
         val message = modelParser.parseMessage("{\"message_id\":5,\"chat\":{\"id\":414309712,\"first_name\":\"Pavel\",\"last_name\":\"Demin\",\"type\":\"private\"},\"date\":1523021455,\"text\":\"/getUpdates\"}")
 
         Assert.assertNotNull(message)
