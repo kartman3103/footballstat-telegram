@@ -1,30 +1,31 @@
+package telegram.tests
 
-import org.apache.http.client.fluent.Request
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
 import telegrambot.Application
+import telegrambot.controller.HttpController
 import java.io.ByteArrayOutputStream
 import java.nio.charset.Charset
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = arrayOf(Application::class))
 class ConnectionServiceToBotTest {
-    @Test
-    fun testBotConnection() {
-        val request = Request.Get("https://api.telegram.org/bot412390579:AAGMICSbEDmvQGVndGJuzdPwq3Cfzo0qjNo/getMe")
-        val response = request.execute()
+    @Autowired
+    lateinit var httpController : HttpController
 
-        val httpResponse = response.returnResponse()
-        Assert.assertEquals(200, httpResponse.statusLine.statusCode)
+    @Test
+    fun pingTest() {
+        val response = httpController.sendGet("https://api.telegram.org/bot412390579:AAGMICSbEDmvQGVndGJuzdPwq3Cfzo0qjNo/getMe")
+        Assert.assertEquals(200, response.statusLine.statusCode)
     }
 
     @Test
-    fun testGetUpdates() {
-        val request = Request.Get("https://api.telegram.org/bot412390579:AAGMICSbEDmvQGVndGJuzdPwq3Cfzo0qjNo/getUpdates")
-        val response = request.execute().returnResponse()
+    fun getUpdatesTest() {
+        val response = httpController.sendGet("https://api.telegram.org/bot412390579:AAGMICSbEDmvQGVndGJuzdPwq3Cfzo0qjNo/getUpdates")
 
         val output = ByteArrayOutputStream()
         response.entity.writeTo(output)
@@ -34,4 +35,9 @@ class ConnectionServiceToBotTest {
         Assert.assertNotNull(content)
         Assert.assertEquals(200, response.statusLine.statusCode)
     }
+
+//    @Test
+//    fun sendMessageTest() {
+//        val response = httpController.sendGet("https")
+//    }
 }
