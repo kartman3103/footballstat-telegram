@@ -1,3 +1,7 @@
 package telegrambot.model
 
-data class User(val id : Int, val isBot : Boolean, val firstName : String, val secondName : String)
+data class User(val id : Int,
+                val isBot : Boolean,
+                val firstName : String,
+                val secondName : String,
+                val languageCode : String)
