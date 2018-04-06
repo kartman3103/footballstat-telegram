@@ -1,11 +1,8 @@
 package telegrambot.model
 
-class Message(val messageId : Int, val messageDate : Int) {
-    val id : Int = messageId
-
-    val date : Int = messageDate
-
-    var from : User? = null
-
-    var chat : Chat? = null
-}
+data class Message(
+        val id : Long,
+        val date : Int,
+        val chat : Chat,
+        val text : String? = null,
+        val from : User? = null)
