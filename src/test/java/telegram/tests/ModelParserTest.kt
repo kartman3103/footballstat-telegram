@@ -27,4 +27,16 @@ class ModelParserTest {
         Assert.assertEquals("Demin", user.secondName)
         Assert.assertEquals("ru", user.languageCode)
     }
+
+    @Test
+    fun chatParserTest() {
+        val chat = modelParser.parseChat("{\"id\":414309712,\"first_name\":\"Pavel\",\"last_name\":\"Demin\",\"type\":\"private\"}")
+
+        Assert.assertNotNull(chat)
+        Assert.assertEquals(414309712, chat.id)
+        Assert.assertEquals("private", chat.type)
+        Assert.assertEquals("Pavel", chat.firstName)
+        Assert.assertEquals("Demin", chat.lastName)
+    }
+
 }
