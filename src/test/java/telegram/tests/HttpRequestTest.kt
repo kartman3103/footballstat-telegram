@@ -27,6 +27,13 @@ class HttpRequestTest {
             "${telegramUrl}/${botId}:${token}/getMe"
         }
         val response = httpController.sendGet(url)
+
+        val output = ByteArrayOutputStream()
+        response.entity.writeTo(output)
+
+        val content = output.toString(Charset.defaultCharset().name())
+
+        Assert.assertTrue(content != null && content.length != 0)
         Assert.assertEquals(200, response.statusLine.statusCode)
     }
 
