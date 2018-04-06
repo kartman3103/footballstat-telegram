@@ -6,8 +6,8 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 @Component
-class HttpController {
-    val logger = LoggerFactory.getLogger(this.javaClass)
+open class HttpController {
+    private val logger = LoggerFactory.getLogger(this.javaClass)
 
     fun sendGet(url : String) : HttpResponse {
         try {
