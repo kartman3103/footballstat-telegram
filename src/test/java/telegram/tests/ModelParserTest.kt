@@ -4,21 +4,26 @@ import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
 import telegrambot.Application
 import telegrambot.parsers.ModelParser
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = arrayOf(Application::class))
+@TestPropertySource(locations= arrayOf("classpath:config/json-template.properties"))
 class ModelParserTest {
-
     @Autowired
     private lateinit var modelParser : ModelParser
 
+    @Value("\${correct.user}")
+    private val correctUser : String? = null
+
     @Test
     fun userParserTest() {
-        val user = modelParser.parseUser("{\"id\":414309712,\"is_bot\":false,\"first_name\":\"Pavel\",\"last_name\":\"Demin\",\"language_code\":\"ru\"}")
+        val user = modelParser.parseUser(correctUser)
 
         Assert.assertNotNull(user)
         Assert.assertEquals(414309712L, user?.id)
@@ -39,6 +44,9 @@ class ModelParserTest {
         val user = modelParser.parseUser("{\"das\"")
         Assert.assertNull(user)
     }
+
+    @Value("\${correct.chat}")
+    private val correctChat : String? = null
 
     @Test
     fun chatParserTest() {
@@ -63,10 +71,12 @@ class ModelParserTest {
         Assert.assertNull(chat)
     }
 
+    @Value("\${correct.message}")
+    private val correctMessage : String? = null
+
     @Test
     fun messageParserTest() {
-        val message = modelParser.parseMessage("{\"message_id\":5,\"from\":{\"id\":414309712,\"is_bot\":false,\"first_name\":\"Pavel\",\"last_name\":\"Demin\",\"language_code\":\"ru\"},\"chat\":{\"id\":414309712,\"first_name\":\"Pavel\",\"last_name\":\"Demin\",\"type\":\"private\"},\"date\":1523021455,\"text\":\"/getUpdates\",\"entities\":[{\"offset\":0,\"length\":11,\"type\":\"bot_command\"}]}},{\"update_id\":540766783,\n" +
-                "\"message\":{\"message_id\":6,\"from\":{\"id\":414309712,\"is_bot\":false,\"first_name\":\"Pavel\",\"last_name\":\"Demin\",\"language_code\":\"ru\"},\"chat\":{\"id\":414309712,\"first_name\":\"Pavel\",\"last_name\":\"Demin\",\"type\":\"private\"},\"date\":1523026221,\"text\":\"/\"}}")
+        val message = modelParser.parseMessage(correctMessage)
 
         Assert.assertNotNull(message)
         Assert.assertEquals(5L, message?.id)
@@ -81,9 +91,12 @@ class ModelParserTest {
         Assert.assertNull(message)
     }
 
+    @Value("\${correct.message.not.user}")
+    private val correctMessageNotUser : String? = null
+
     @Test
     fun messageWithoutUserTest() {
-        val message = modelParser.parseMessage("{\"message_id\":5,\"chat\":{\"id\":414309712,\"first_name\":\"Pavel\",\"last_name\":\"Demin\",\"type\":\"private\"},\"date\":1523021455,\"text\":\"/getUpdates\"}")
+        val message = modelParser.parseMessage(correctMessageNotUser)
 
         Assert.assertNotNull(message)
         Assert.assertNotNull(message?.chat)
