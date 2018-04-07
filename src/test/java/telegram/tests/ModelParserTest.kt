@@ -135,8 +135,50 @@ class ModelParserTest {
         Assert.assertNull(update)
     }
 
-//    @Test
-//    fun updateResponseTest() {
-//        val updateResponse = modelParser.parseUpdateResponse()
-//    }
+    @Value("\${correct.update.response}")
+    private val correctUpdateResponse : String? = null
+
+    @Test
+    fun updateResponseTest() {
+        val updateResponse = modelParser.parseUpdateResponse(correctUpdateResponse)
+
+        Assert.assertNotNull(updateResponse)
+        Assert.assertTrue(updateResponse?.success == true)
+        Assert.assertTrue(updateResponse?.updates?.size == 1)
+
+        val firstUpdate = updateResponse?.updates?.get(0)
+        Assert.assertNotNull(firstUpdate)
+        Assert.assertEquals(540766782L, firstUpdate?.id)
+
+        val updateMessage = firstUpdate?.message
+        Assert.assertNotNull(updateMessage)
+        Assert.assertEquals(5L, updateMessage ?.id)
+        Assert.assertEquals(1523021455, updateMessage?.date)
+
+        Assert.assertNotNull(updateMessage?.chat)
+    }
+
+    @Test
+    fun updateResponseNullTest() {
+        val updateResponse = modelParser.parseUpdateResponse(null)
+        Assert.assertNull(updateResponse)
+    }
+
+    @Test
+    fun incorrectJsonUpdateResponseTest() {
+        val updateResponse = modelParser.parseUpdateResponse("{\"das\"")
+        Assert.assertNull(updateResponse)
+    }
+
+    @Value("\${correct.update.response.empty}")
+    private val emptyUpdatesResponse : String? = null
+
+    @Test
+    fun emptyUpdatesResponseTest() {
+        val updateResponse = modelParser.parseUpdateResponse(emptyUpdatesResponse)
+
+        Assert.assertNotNull(updateResponse)
+        Assert.assertNotNull(updateResponse?.updates)
+        Assert.assertTrue(updateResponse?.updates?.size == 0)
+    }
 }

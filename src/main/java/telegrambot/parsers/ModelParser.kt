@@ -1,12 +1,12 @@
 package telegrambot.parsers
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ArrayNode
 import org.springframework.stereotype.Component
-import telegrambot.model.Chat
-import telegrambot.model.Message
-import telegrambot.model.Update
-import telegrambot.model.User
+import telegrambot.model.*
 import java.io.IOException
+import java.util.*
 
 @Component
 open class ModelParser {
@@ -58,7 +58,7 @@ open class ModelParser {
         catch (ex : NullPointerException) { null }
     }
 
-    fun parseUpdate(json: String?) : Update? {
+    fun parseUpdate(json : String?) : Update? {
         return try {
             with(ObjectMapper().readTree(json)) {
                 Update(
@@ -69,5 +69,32 @@ open class ModelParser {
         }
         catch (ex : IOException) { null }
         catch (ex : NullPointerException) { null }
+    }
+
+    fun parseUpdateResponse(json : String?) : UpdateResponse? {
+        return try {
+            with(ObjectMapper().readTree(json)) {
+                UpdateResponse(
+                        get("ok").booleanValue(),
+                        parseUpdates(get("result") as? JsonNode))
+            }
+        }
+        catch (ex : IOException) { null }
+        catch (ex : NullPointerException) { null }
+    }
+
+    fun parseUpdates(jsonNode : JsonNode?) : List<Update> {
+        if (jsonNode == null) {
+            return emptyList()
+        }
+
+        val updates = ArrayList<Update>()
+        for (element in jsonNode.elements()) {
+            val parsedUpdate : Update? = parseUpdate(element.toString())
+            if (parsedUpdate != null) {
+                updates.add(parsedUpdate)
+            }
+        }
+        return updates
     }
 }
