@@ -105,4 +105,38 @@ class ModelParserTest {
         Assert.assertEquals("/getUpdates", message?.text)
         Assert.assertNull(message?.from)
     }
+
+    @Value("\${correct.update}")
+    private val correctUpdate : String? = null
+
+    @Test
+    fun updateParseTest() {
+        val update = modelParser.parseUpdate(correctUpdate)
+
+        Assert.assertNotNull(update?.message)
+        Assert.assertEquals(540766782L, update?.id)
+
+        Assert.assertNotNull(update?.message)
+        Assert.assertNotNull(update?.message?.chat)
+        Assert.assertEquals(5L, update?.message?.id)
+        Assert.assertEquals(1523021455, update?.message?.date)
+        Assert.assertEquals("/getUpdates", update?.message?.text)
+    }
+
+    @Test
+    fun updateNullTest() {
+        val update = modelParser.parseUpdate(null)
+        Assert.assertNull(update)
+    }
+
+    @Test
+    fun incorrectUpdateTest() {
+        val update = modelParser.parseUpdate("{\"das\"")
+        Assert.assertNull(update)
+    }
+
+//    @Test
+//    fun updateResponseTest() {
+//        val updateResponse = modelParser.parseUpdateResponse()
+//    }
 }
