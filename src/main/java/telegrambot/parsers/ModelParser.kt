@@ -2,7 +2,6 @@ package telegrambot.parsers
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.ArrayNode
 import org.springframework.stereotype.Component
 import telegrambot.model.*
 import java.io.IOException
@@ -11,90 +10,76 @@ import java.util.*
 @Component
 open class ModelParser {
     fun parseUser(json : String?) : User? {
-        return try {
-            with(ObjectMapper().readTree(json)) {
-                User(
-                    get("id").longValue(),
-                    get("is_bot").booleanValue(),
-                    get("first_name").textValue(),
-                    get("last_name").textValue(),
-                    get("language_code").textValue()
-                )
-            }
+        return parseTree(json)?.let {
+            User(
+                it.get("id").longValue(),
+                it.get("is_bot").booleanValue(),
+                it.get("first_name").textValue(),
+                it.get("last_name").textValue(),
+                it.get("language_code").textValue()
+            )
         }
-        catch (ex : IOException) { null }
-        catch (ex : NullPointerException) { null }
     }
 
     fun parseChat(json : String?) : Chat? {
-        return try {
-            with(ObjectMapper().readTree(json)) {
-                Chat(
-                    get("id").longValue(),
-                    get("type").textValue(),
-                    get("first_name").textValue(),
-                    get("last_name").textValue()
-                )
-            }
+        return parseTree(json)?.let {
+            Chat(
+                it.get("id").longValue(),
+                it.get("type").textValue(),
+                it.get("first_name").textValue(),
+                it.get("last_name").textValue()
+            )
         }
-        catch (ex : IOException) { null }
-        catch (ex : NullPointerException) { null }
     }
 
     fun parseMessage(json: String?) : Message? {
-        return try {
-            with(ObjectMapper().readTree(json)) {
-                val chat = parseChat(get("chat").toString())!!
-                Message(
-                    get("message_id").longValue(),
-                    get("date").intValue(),
-                    chat,
-                    get("text")?.textValue(),
-                    parseUser(get("from")?.toString())
-                )
-            }
+        return parseTree(json)?.let {
+            Message(
+                it.get("message_id").longValue(),
+                it.get("date").intValue(),
+                parseChat(it.get("chat")?.toString()),
+                it.get("text")?.textValue(),
+                parseUser(it.get("from")?.toString())
+            )
         }
-        catch (ex : IOException) { null }
-        catch (ex : NullPointerException) { null }
     }
 
     fun parseUpdate(json : String?) : Update? {
-        return try {
-            with(ObjectMapper().readTree(json)) {
-                Update(
-                    get("update_id").longValue(),
-                    parseMessage(get("message").toString())
-                )
-            }
+        return parseTree(json)?.let {
+            Update(
+                it.get("update_id").longValue(),
+                parseMessage(it.get("message").toString())
+            )
         }
-        catch (ex : IOException) { null }
-        catch (ex : NullPointerException) { null }
     }
 
     fun parseUpdateResponse(json : String?) : UpdateResponse? {
-        return try {
-            with(ObjectMapper().readTree(json)) {
-                UpdateResponse(
-                        get("ok").booleanValue(),
-                        parseUpdates(get("result")))
-            }
+        return parseTree(json)?.let {
+            val updates = parseUpdates(it.get("result"))
+            UpdateResponse(
+                it.get("ok").booleanValue(),
+                if (updates != null) updates else emptyList()
+            )
         }
-        catch (ex : IOException) { null }
-        catch (ex : NullPointerException) { null }
     }
 
-    fun parseUpdates(jsonNode : JsonNode?) : List<Update> {
-        if (jsonNode == null) {
-            return emptyList()
+    private fun parseTree(json : String?) : JsonNode? {
+        return json?.let {
+            try {
+                ObjectMapper().readTree(it)
+            } catch (ex : IOException) { null }
         }
+    }
 
-        val updates = ArrayList<Update>()
-        for (element in jsonNode.elements()) {
-            val parsedUpdate : Update? = parseUpdate(element.toString())
-            if (parsedUpdate != null) {
-                updates.add(parsedUpdate)
+    private fun parseUpdates(jsonNode : JsonNode?) : List<Update>? {
+        return jsonNode?.let {
+            val updates = ArrayList<Update>()
+            for (element in it.elements()) {
+                parseUpdate(element.toString())?.let {
+                    updates.add(it)
+                }
             }
+            return updates
         }
-        return updates
     }
 }
