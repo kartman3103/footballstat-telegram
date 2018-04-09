@@ -76,7 +76,7 @@ open class ModelParser {
             with(ObjectMapper().readTree(json)) {
                 UpdateResponse(
                         get("ok").booleanValue(),
-                        parseUpdates(get("result") as? JsonNode))
+                        parseUpdates(get("result")))
             }
         }
         catch (ex : IOException) { null }

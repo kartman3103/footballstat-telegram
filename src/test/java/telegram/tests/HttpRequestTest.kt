@@ -23,7 +23,7 @@ class HttpRequestTest {
 
     @Test
     fun pingTest() {
-        val response = httpController.sendGet(urlDealer.getMe)
+        val response = httpController.makeResponseGET(urlDealer.getMe)
 
         val output = ByteArrayOutputStream()
         response.entity.writeTo(output)
@@ -36,12 +36,12 @@ class HttpRequestTest {
 
     @Test(expected = Exception::class)
     fun incorrectUrlPing() {
-        httpController.sendGet("http://telegramIncorrectUrl:3030")
+        httpController.makeResponseGET("http://telegramIncorrectUrl:3030")
     }
 
     @Test
     fun getUpdatesTest() {
-        val response = httpController.sendGet(urlDealer.getUpdates)
+        val response = httpController.makeResponseGET(urlDealer.getUpdates)
         val output = ByteArrayOutputStream()
         response.entity.writeTo(output)
 
@@ -53,6 +53,6 @@ class HttpRequestTest {
 
     @Test
     fun sendMessageTest() {
-//        val response = httpController.sendGet("https")
+//        val response = httpController.makeResponseGet("https")
     }
 }

@@ -1,8 +1,11 @@
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import telegrambot.RemoteConfig
+import telegrambot.UrlDealer
 import telegrambot.controller.HttpController
+import telegrambot.model.User
+import telegrambot.parsers.ModelParser
+import java.nio.charset.Charset
 
 @Component
 open class BotController {
@@ -10,9 +13,16 @@ open class BotController {
     private lateinit var httpController : HttpController
 
     @Autowired
-    private lateinit var remoteConfig : RemoteConfig
+    private lateinit var urlDealer : UrlDealer
 
-//    open fun getMe() : User {
-//
-//    }
+    @Autowired
+    private lateinit var modelParser : ModelParser
+
+    open fun getMe() : User? {
+
+        val content : String = httpController.makeContentGET(
+                urlDealer.getMe, Charset.defaultCharset())
+
+        return modelParser.parseUser(content)
+    }
 }
