@@ -34,6 +34,11 @@ class HttpRequestTest {
         Assert.assertEquals(200, response.statusLine.statusCode)
     }
 
+    @Test(expected = Exception::class)
+    fun incorrectUrlPing() {
+        httpController.sendGet("http://telegramIncorrectUrl:3030")
+    }
+
     @Test
     fun getUpdatesTest() {
         val response = httpController.sendGet(urlDealer.getUpdates)
