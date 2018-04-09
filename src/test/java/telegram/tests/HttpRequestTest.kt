@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
 import telegrambot.Application
-import telegrambot.RemoteConfig
 import telegrambot.controller.HttpController
+import telegrambot.UrlDealer
 import java.io.ByteArrayOutputStream
 import java.nio.charset.Charset
 
@@ -19,14 +19,11 @@ class HttpRequestTest {
     private lateinit var httpController : HttpController
 
     @Autowired
-    private lateinit var remoteConfig : RemoteConfig
+    private lateinit var urlDealer : UrlDealer
 
     @Test
     fun pingTest() {
-        val url = with(remoteConfig) {
-            "${telegramUrl}/${botId}:${token}/getMe"
-        }
-        val response = httpController.sendGet(url)
+        val response = httpController.sendGet(urlDealer.getMe)
 
         val output = ByteArrayOutputStream()
         response.entity.writeTo(output)
@@ -39,11 +36,7 @@ class HttpRequestTest {
 
     @Test
     fun getUpdatesTest() {
-        val url = with(remoteConfig) {
-            "${telegramUrl}/${botId}:${token}/getUpdates"
-        }
-
-        val response = httpController.sendGet(url)
+        val response = httpController.sendGet(urlDealer.getUpdates)
         val output = ByteArrayOutputStream()
         response.entity.writeTo(output)
 
@@ -53,8 +46,8 @@ class HttpRequestTest {
         Assert.assertEquals(200, response.statusLine.statusCode)
     }
 
-//    @Test
-//    fun sendMessageTest() {
-////        val response = httpController.sendGet("https")
-//    }
+    @Test
+    fun sendMessageTest() {
+//        val response = httpController.sendGet("https")
+    }
 }
