@@ -29,7 +29,7 @@ class ModelParserTest {
         Assert.assertEquals(414309712L, user?.id)
         Assert.assertEquals(false, user?.isBot)
         Assert.assertEquals("Pavel", user?.firstName)
-        Assert.assertEquals("Demin", user?.secondName)
+        Assert.assertEquals("Demin", user?.username)
         Assert.assertEquals("ru", user?.languageCode)
     }
 
@@ -140,13 +140,12 @@ class ModelParserTest {
 
     @Test
     fun updateResponseTest() {
-        val updateResponse = modelParser.parseUpdateResponse(correctUpdateResponse)
+        val updates = modelParser.parseUpdates(correctUpdateResponse)
 
-        Assert.assertNotNull(updateResponse)
-        Assert.assertTrue(updateResponse?.success == true)
-        Assert.assertTrue(updateResponse?.updates?.size == 1)
+        Assert.assertNotNull(updates)
+        Assert.assertTrue(updates?.size == 1)
 
-        val firstUpdate = updateResponse?.updates?.get(0)
+        val firstUpdate = updates?.get(0)
         Assert.assertNotNull(firstUpdate)
         Assert.assertEquals(540766782L, firstUpdate?.id)
 
@@ -160,13 +159,13 @@ class ModelParserTest {
 
     @Test
     fun updateResponseNullTest() {
-        val updateResponse = modelParser.parseUpdateResponse(null)
+        val updateResponse = modelParser.parseUpdates(null)
         Assert.assertNull(updateResponse)
     }
 
     @Test
     fun incorrectJsonUpdateResponseTest() {
-        val updateResponse = modelParser.parseUpdateResponse("{\"das\"")
+        val updateResponse = modelParser.parseUpdates("{\"das\"")
         Assert.assertNull(updateResponse)
     }
 
@@ -175,10 +174,10 @@ class ModelParserTest {
 
     @Test
     fun emptyUpdatesResponseTest() {
-        val updateResponse = modelParser.parseUpdateResponse(emptyUpdatesResponse)
+        val updates = modelParser.parseUpdates(emptyUpdatesResponse)
 
-        Assert.assertNotNull(updateResponse)
-        Assert.assertNotNull(updateResponse?.updates)
-        Assert.assertTrue(updateResponse?.updates?.size == 0)
+        Assert.assertNotNull(updates)
+        Assert.assertNotNull(updates)
+        Assert.assertTrue(updates?.size == 0)
     }
 }

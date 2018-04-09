@@ -10,13 +10,13 @@ import java.util.*
 @Component
 open class ModelParser {
     fun parseUser(json : String?) : User? {
-        return parseTree(json)?.let {
+        return parseTree(json)?.get("result")?.let {
             User(
                 it.get("id").longValue(),
                 it.get("is_bot").booleanValue(),
                 it.get("first_name").textValue(),
-                it.get("last_name").textValue(),
-                it.get("language_code").textValue()
+                it.get("username")?.textValue(),
+                it.get("language_code")?.textValue()
             )
         }
     }
@@ -26,8 +26,8 @@ open class ModelParser {
             Chat(
                 it.get("id").longValue(),
                 it.get("type").textValue(),
-                it.get("first_name").textValue(),
-                it.get("last_name").textValue()
+                it.get("first_name")?.textValue(),
+                it.get("last_name")?.textValue()
             )
         }
     }
@@ -53,13 +53,15 @@ open class ModelParser {
         }
     }
 
-    fun parseUpdateResponse(json : String?) : UpdateResponse? {
-        return parseTree(json)?.let {
-            val updates = parseUpdates(it.get("result"))
-            UpdateResponse(
-                it.get("ok").booleanValue(),
-                if (updates != null) updates else emptyList()
-            )
+    fun parseUpdates(json: String?) : List<Update>? {
+        return parseTree(json)?.get("result")?.let {
+            val updates = ArrayList<Update>()
+            for (element in it.elements()) {
+                parseUpdate(element.toString())?.let {
+                    updates.add(it)
+                }
+            }
+            return updates
         }
     }
 
@@ -68,18 +70,6 @@ open class ModelParser {
             try {
                 ObjectMapper().readTree(it)
             } catch (ex : IOException) { null }
-        }
-    }
-
-    private fun parseUpdates(jsonNode : JsonNode?) : List<Update>? {
-        return jsonNode?.let {
-            val updates = ArrayList<Update>()
-            for (element in it.elements()) {
-                parseUpdate(element.toString())?.let {
-                    updates.add(it)
-                }
-            }
-            return updates
         }
     }
 }

@@ -9,6 +9,8 @@ import org.springframework.test.context.junit4.SpringRunner
 import telegrambot.Application
 import telegrambot.controller.HttpController
 import telegrambot.UrlDealer
+import telegrambot.controller.BotController
+import telegrambot.model.User
 import java.io.ByteArrayOutputStream
 import java.nio.charset.Charset
 
@@ -21,6 +23,9 @@ class HttpRequestTest {
     @Autowired
     private lateinit var urlDealer : UrlDealer
 
+    @Autowired
+    private lateinit var botController : BotController
+
     @Test
     fun pingTest() {
         val response = httpController.makeResponseGET(urlDealer.getMe)
@@ -32,6 +37,15 @@ class HttpRequestTest {
 
         Assert.assertTrue(content != null && content.length != 0)
         Assert.assertEquals(200, response.statusLine.statusCode)
+    }
+
+    @Test
+    fun botPingTest() {
+        val user : User? = botController.getMe()
+        Assert.assertEquals(412390579L, user?.id)
+        Assert.assertEquals(true, user?.isBot)
+        Assert.assertEquals("fs_bot", user?.firstName)
+        Assert.assertEquals("football_stat_bot", user?.username)
     }
 
     @Test(expected = Exception::class)
