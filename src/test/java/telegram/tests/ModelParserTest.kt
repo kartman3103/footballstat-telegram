@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
 import telegrambot.Application
+import telegrambot.parsers.ModelInvalidationException
 import telegrambot.parsers.ModelParser
 
 @RunWith(SpringRunner::class)
@@ -179,5 +180,13 @@ class ModelParserTest {
         Assert.assertNotNull(updates)
         Assert.assertNotNull(updates)
         Assert.assertTrue(updates?.size == 0)
+    }
+
+    @Value("\${incorrect.user.without.id}")
+    private val incorrectUserWithoutId : String? = null
+
+    @Test(expected = ModelInvalidationException::class)
+    fun incorrectUserWithouIdTest() {
+        modelParser.parseUser(incorrectUserWithoutId)
     }
 }

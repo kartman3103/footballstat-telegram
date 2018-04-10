@@ -3,20 +3,29 @@ package telegrambot.parsers
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.stereotype.Component
-import telegrambot.model.*
+import telegrambot.model.Chat
+import telegrambot.model.Message
+import telegrambot.model.Update
+import telegrambot.model.User
 import java.io.IOException
 import java.util.*
 
 @Component
 open class ModelParser {
+    val node = { name : String, jsonNode : JsonNode -> jsonNode.get(name) }
+
+    val requiredNode = { name : String, jsonNode : JsonNode -> jsonNode.get(name) ?:
+            throw ModelInvalidationException("Cannot find json node with name: $name")
+    }
+
     fun parseUser(json : String?) : User? {
         return parseTree(json)?.get("result")?.let {
             User(
-                it.get("id").longValue(),
-                it.get("is_bot").booleanValue(),
-                it.get("first_name").textValue(),
-                it.get("username")?.textValue(),
-                it.get("language_code")?.textValue()
+                requiredNode("id", it).longValue(),
+                requiredNode("is_bot", it).booleanValue(),
+                requiredNode("first_name", it).textValue(),
+                node("username", it)?.textValue(),
+                node("language_code", it)?.textValue()
             )
         }
     }
@@ -24,22 +33,25 @@ open class ModelParser {
     fun parseChat(json : String?) : Chat? {
         return parseTree(json)?.let {
             Chat(
-                it.get("id").longValue(),
-                it.get("type").textValue(),
-                it.get("first_name")?.textValue(),
-                it.get("last_name")?.textValue()
+                requiredNode("id", it).longValue(),
+                requiredNode("type", it).textValue(),
+                node("first_name", it)?.textValue(),
+                node("last_name", it)?.textValue()
             )
         }
     }
 
     fun parseMessage(json: String?) : Message? {
         return parseTree(json)?.let {
+            val chat = parseChat(requiredNode("chat", it).toString())
+                    ?: throw ModelInvalidationException("Cannot find json node with name: chat")
+
             Message(
-                it.get("message_id").longValue(),
-                it.get("date").intValue(),
-                parseChat(it.get("chat")?.toString()),
-                it.get("text")?.textValue(),
-                parseUser(it.get("from")?.toString())
+                requiredNode("message_id", it).longValue(),
+                requiredNode("date", it).intValue(),
+                chat,
+                node("text", it)?.textValue(),
+                parseUser(node("from", it)?.toString())
             )
         }
     }
@@ -47,8 +59,8 @@ open class ModelParser {
     fun parseUpdate(json : String?) : Update? {
         return parseTree(json)?.let {
             Update(
-                it.get("update_id").longValue(),
-                parseMessage(it.get("message").toString())
+                requiredNode("update_id", it).longValue(),
+                parseMessage(requiredNode("message", it).toString())
             )
         }
     }
