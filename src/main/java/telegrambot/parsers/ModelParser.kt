@@ -11,15 +11,39 @@ import java.util.*
 
 @Component
 open class ModelParser {
-    val requiredNode = { name : String, jsonNode : JsonNode -> jsonNode.get(name) ?:
+    private val requiredNode = { name : String, jsonNode : JsonNode -> jsonNode.get(name) ?:
             throw ModelInvalidationException("Cannot find json node with name: $name")
     }
 
-    val node = { name : String, jsonNode : JsonNode -> jsonNode.get(name) }
-    val parseTree = { json : String -> ObjectMapper().readTree(json) }
-    val parseUser = { json : String -> parseTree(json).get("result").let { parseUser(it) } }
+    private val node = {
+        name : String, jsonNode : JsonNode -> jsonNode.get(name)
+    }
 
-    fun parseUser(jsonNode : JsonNode) : User {
+    private val parseResult = {
+        json : String -> requiredNode("result", ObjectMapper().readTree(json))
+    }
+
+    val parseUserResponse = {
+        json : String -> parseResult(json).let { parseUser(it) }
+    }
+
+    val parseMessageResponse = {
+        json : String -> parseResult(json).let { parseMessage(it) }
+    }
+
+    fun parseUpdates(json: String) : List<Update> {
+        requiredNode("result", ObjectMapper().readTree(json)).let {
+            val updates = ArrayList<Update>()
+            for (element in it.elements()) {
+                parseUpdate(element).let {
+                    updates.add(it)
+                }
+            }
+            return updates
+        }
+    }
+
+    private fun parseUser(jsonNode : JsonNode) : User {
         return jsonNode.let {
             User(
                 requiredNode("id", it).longValue(),
@@ -31,8 +55,8 @@ open class ModelParser {
         }
     }
 
-    fun parseChat(json : String) : Chat {
-        return parseTree(json).let {
+    private fun parseChat(jsonNode: JsonNode) : Chat {
+        return jsonNode.let {
             Chat(
                 requiredNode("id", it).longValue(),
                 requiredNode("type", it).textValue(),
@@ -42,36 +66,24 @@ open class ModelParser {
         }
     }
 
-    fun parseMessage(json: String) : Message {
-        return parseTree(json).let {
+    private fun parseMessage(jsonNode : JsonNode) : Message {
+        return jsonNode.let {
             Message(
                 requiredNode("message_id", it).longValue(),
                 requiredNode("date", it).intValue(),
-                parseChat(requiredNode("chat", it).toString()),
+                parseChat(requiredNode("chat", it)),
                 node("text", it)?.textValue(),
                 node("from", it)?.let { parseUser(it) }
             )
         }
     }
 
-    fun parseUpdate(json : String) : Update {
-        return parseTree(json).let {
+    private fun parseUpdate(jsonNode: JsonNode) : Update {
+        return jsonNode.let {
             Update(
                 requiredNode("update_id", it).longValue(),
-                parseMessage(requiredNode("message", it).toString())
+                parseMessage(requiredNode("message", it))
             )
-        }
-    }
-
-    fun parseUpdates(json: String) : List<Update> {
-        requiredNode("result", ObjectMapper().readTree(json)).let {
-            val updates = ArrayList<Update>()
-            for (element in it.elements()) {
-                parseUpdate(element.toString()).let {
-                    updates.add(it)
-                }
-            }
-            return updates
         }
     }
 }

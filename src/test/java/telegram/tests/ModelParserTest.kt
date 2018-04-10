@@ -26,7 +26,7 @@ class ModelParserTest {
 
     @Test
     fun userParserTest() {
-        val user = modelParser.parseUser(correctUser ?: "")
+        val user = modelParser.parseUserResponse(correctUser ?: "")
 
         Assert.assertNotNull(user)
         Assert.assertEquals(414309712L, user.id)
@@ -39,29 +39,25 @@ class ModelParserTest {
     @Value("\${correct.chat}")
     private val correctChat : String? = null
 
-    @Test
-    fun chatParserTest() {
-        val chat = modelParser.parseChat(correctChat ?: "")
-
-        Assert.assertNotNull(chat)
-        Assert.assertEquals(414309712L, chat.id)
-        Assert.assertEquals("private", chat.type)
-        Assert.assertEquals("Pavel", chat.firstName)
-        Assert.assertEquals("Demin", chat.lastName)
-    }
-
     @Value("\${correct.message}")
     private val correctMessage : String? = null
 
     @Test
     fun messageParserTest() {
-        val message = modelParser.parseMessage(correctMessage ?: "")
+        val message = modelParser.parseMessageResponse(correctMessage ?: "")
 
         Assert.assertNotNull(message)
         Assert.assertEquals(5L, message.id)
         Assert.assertEquals(1523021455, message.date)
 
-        Assert.assertNotNull(message.chat)
+        val chat = message.chat
+        Assert.assertNotNull(chat)
+        Assert.assertEquals(414309712L, chat.id)
+        Assert.assertEquals("private", chat.type)
+        Assert.assertEquals("Pavel", chat.firstName)
+        Assert.assertEquals("Demin", chat.lastName)
+
+
     }
 
     @Value("\${correct.message.not.user}")
@@ -69,7 +65,7 @@ class ModelParserTest {
 
     @Test
     fun messageWithoutUserTest() {
-        val message = modelParser.parseMessage(correctMessageNotUser ?: "")
+        val message = modelParser.parseMessageResponse(correctMessageNotUser ?: "")
 
         Assert.assertNotNull(message)
         Assert.assertNotNull(message.chat)
@@ -81,20 +77,6 @@ class ModelParserTest {
 
     @Value("\${correct.update}")
     private val correctUpdate : String? = null
-
-    @Test
-    fun updateParseTest() {
-        val update = modelParser.parseUpdate(correctUpdate ?: "")
-
-        Assert.assertNotNull(update.message)
-        Assert.assertEquals(540766782L, update.id)
-
-        Assert.assertNotNull(update.message)
-        Assert.assertNotNull(update.message?.chat)
-        Assert.assertEquals(5L, update.message?.id)
-        Assert.assertEquals(1523021455, update.message?.date)
-        Assert.assertEquals("/getUpdates", update.message?.text)
-    }
 
     @Value("\${correct.update.response}")
     private val correctUpdateResponse : String? = null
@@ -130,26 +112,22 @@ class ModelParserTest {
         Assert.assertTrue(updates.size == 0)
     }
 
+    @Value("\${correct.sended.message.response}")
+    private val correctSendedMessageResponse : String? = null
+
+    @Test
+    fun sendMessageResponseTest() {
+        val message = modelParser.parseMessageResponse(correctSendedMessageResponse ?: "")
+    }
+
     @Test(expected = JsonMappingException::class)
-    fun emptyStringUserTest() { modelParser.parseUser("") }
+    fun emptyStringUserTest() { modelParser.parseUserResponse("") }
 
     @Test(expected = JsonParseException::class)
-    fun incorrectUserJsonTest() { modelParser.parseUser("{\"das\"") }
+    fun incorrectUserJsonTest() { modelParser.parseUserResponse("{\"das\"") }
 
     @Test(expected = JsonMappingException::class)
-    fun emptyStringChatTest() { modelParser.parseChat("") }
-
-    @Test(expected = JsonParseException::class)
-    fun chatIncorrectTest() { modelParser.parseChat("{\"das\"") }
-
-    @Test(expected = JsonMappingException::class)
-    fun emptyMessageTest() { modelParser.parseMessage("") }
-
-    @Test(expected = JsonMappingException::class)
-    fun updateEmptyStringTest() { modelParser.parseUpdate("") }
-
-    @Test(expected = JsonParseException::class)
-    fun incorrectUpdateTest() { modelParser.parseUpdate("{\"das\"") }
+    fun emptyMessageTest() { modelParser.parseMessageResponse("") }
 
     @Test(expected = JsonMappingException::class)
     fun emptyStringUpdateTest() { modelParser.parseUpdates("") }
@@ -161,5 +139,5 @@ class ModelParserTest {
     private val incorrectUserWithoutId : String? = null
 
     @Test(expected = ModelInvalidationException::class)
-    fun incorrectUserWithouIdTest() { modelParser.parseUser(incorrectUserWithoutId ?: "") }
+    fun incorrectUserWithouIdTest() { modelParser.parseUserResponse(incorrectUserWithoutId ?: "") }
 }
