@@ -1,5 +1,6 @@
 package telegrambot.controller
 
+import org.apache.http.HttpResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import telegrambot.UrlDealer
@@ -31,5 +32,10 @@ open class BotController {
                 urlDealer.getUpdates, Charset.defaultCharset())
 
         return modelParser.parseUpdates(content)
+    }
+
+    open fun sendMessage(chatId : Int, message : String) : HttpResponse {
+        return httpController.makeResponseGET(
+                "${urlDealer.sendMessage}?chat_id=$chatId&text=$message")
     }
 }

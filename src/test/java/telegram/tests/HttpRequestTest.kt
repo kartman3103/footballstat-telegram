@@ -4,27 +4,25 @@ import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
 import telegrambot.Application
-import telegrambot.controller.HttpController
 import telegrambot.UrlDealer
-import telegrambot.controller.BotController
-import telegrambot.model.User
+import telegrambot.controller.HttpController
 import java.io.ByteArrayOutputStream
 import java.nio.charset.Charset
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = arrayOf(Application::class))
+@TestPropertySource(locations= arrayOf("classpath:config/test-data.properties"))
 class HttpRequestTest {
     @Autowired
     private lateinit var httpController : HttpController
 
     @Autowired
     private lateinit var urlDealer : UrlDealer
-
-    @Autowired
-    private lateinit var botController : BotController
 
     @Test
     fun pingTest() {
@@ -37,15 +35,6 @@ class HttpRequestTest {
 
         Assert.assertTrue(content != null && content.length != 0)
         Assert.assertEquals(200, response.statusLine.statusCode)
-    }
-
-    @Test
-    fun botPingTest() {
-        val user : User? = botController.getMe()
-        Assert.assertEquals(412390579L, user?.id)
-        Assert.assertEquals(true, user?.isBot)
-        Assert.assertEquals("fs_bot", user?.firstName)
-        Assert.assertEquals("football_stat_bot", user?.username)
     }
 
     @Test(expected = Exception::class)
@@ -65,8 +54,20 @@ class HttpRequestTest {
         Assert.assertEquals(200, response.statusLine.statusCode)
     }
 
+    @Value("\${test.chat.id}")
+    private var chatId : Int? = null
+
     @Test
     fun sendMessageTest() {
-//        val response = httpController.makeResponseGet("https")
+        val message = "Welcome+to+football+statistic+world"
+        val response = httpController.makeResponseGET("${urlDealer.sendMessage}?chat_id=$chatId&text=$message")
+
+        val output = ByteArrayOutputStream()
+        response.entity.writeTo(output)
+
+        val content = output.toString(Charset.defaultCharset().name())
+
+        Assert.assertNotNull(content)
+        Assert.assertEquals(200, response.statusLine.statusCode)
     }
 }

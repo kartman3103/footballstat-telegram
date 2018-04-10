@@ -16,7 +16,7 @@ import telegrambot.parsers.ModelParser
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = arrayOf(Application::class))
-@TestPropertySource(locations= arrayOf("classpath:config/json-template.properties"))
+@TestPropertySource(locations= arrayOf("classpath:config/test-data.properties"))
 class ModelParserTest {
     @Autowired
     private lateinit var modelParser : ModelParser

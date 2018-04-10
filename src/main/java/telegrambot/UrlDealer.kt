@@ -18,6 +18,7 @@ open class UrlDealer {
 
         getMe = "${botUrl}/getMe"
         getUpdates = "${botUrl}/getUpdates"
+        sendMessage = "${botUrl}/sendMessage"
     }
 
     lateinit var botUrl : String
@@ -25,4 +26,6 @@ open class UrlDealer {
     lateinit var getMe : String
 
     lateinit var getUpdates : String
+
+    lateinit var sendMessage : String
 }
