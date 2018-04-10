@@ -7,19 +7,20 @@ import telegrambot.model.Chat
 import telegrambot.model.Message
 import telegrambot.model.Update
 import telegrambot.model.User
-import java.io.IOException
 import java.util.*
 
 @Component
 open class ModelParser {
-    val node = { name : String, jsonNode : JsonNode -> jsonNode.get(name) }
-
     val requiredNode = { name : String, jsonNode : JsonNode -> jsonNode.get(name) ?:
             throw ModelInvalidationException("Cannot find json node with name: $name")
     }
 
-    fun parseUser(json : String?) : User? {
-        return parseTree(json)?.get("result")?.let {
+    val node = { name : String, jsonNode : JsonNode -> jsonNode.get(name) }
+    val parseTree = { json : String -> ObjectMapper().readTree(json) }
+    val parseUser = { json : String -> parseTree(json).get("result").let { parseUser(it) } }
+
+    fun parseUser(jsonNode : JsonNode) : User {
+        return jsonNode.let {
             User(
                 requiredNode("id", it).longValue(),
                 requiredNode("is_bot", it).booleanValue(),
@@ -30,8 +31,8 @@ open class ModelParser {
         }
     }
 
-    fun parseChat(json : String?) : Chat? {
-        return parseTree(json)?.let {
+    fun parseChat(json : String) : Chat {
+        return parseTree(json).let {
             Chat(
                 requiredNode("id", it).longValue(),
                 requiredNode("type", it).textValue(),
@@ -41,23 +42,20 @@ open class ModelParser {
         }
     }
 
-    fun parseMessage(json: String?) : Message? {
-        return parseTree(json)?.let {
-            val chat = parseChat(requiredNode("chat", it).toString())
-                    ?: throw ModelInvalidationException("Cannot find json node with name: chat")
-
+    fun parseMessage(json: String) : Message {
+        return parseTree(json).let {
             Message(
                 requiredNode("message_id", it).longValue(),
                 requiredNode("date", it).intValue(),
-                chat,
+                parseChat(requiredNode("chat", it).toString()),
                 node("text", it)?.textValue(),
-                parseUser(node("from", it)?.toString())
+                node("from", it)?.let { parseUser(it) }
             )
         }
     }
 
-    fun parseUpdate(json : String?) : Update? {
-        return parseTree(json)?.let {
+    fun parseUpdate(json : String) : Update {
+        return parseTree(json).let {
             Update(
                 requiredNode("update_id", it).longValue(),
                 parseMessage(requiredNode("message", it).toString())
@@ -65,23 +63,15 @@ open class ModelParser {
         }
     }
 
-    fun parseUpdates(json: String?) : List<Update>? {
-        return parseTree(json)?.get("result")?.let {
+    fun parseUpdates(json: String) : List<Update> {
+        requiredNode("result", ObjectMapper().readTree(json)).let {
             val updates = ArrayList<Update>()
             for (element in it.elements()) {
-                parseUpdate(element.toString())?.let {
+                parseUpdate(element.toString()).let {
                     updates.add(it)
                 }
             }
             return updates
-        }
-    }
-
-    private fun parseTree(json : String?) : JsonNode? {
-        return json?.let {
-            try {
-                ObjectMapper().readTree(it)
-            } catch (ex : IOException) { null }
         }
     }
 }

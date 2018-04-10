@@ -30,6 +30,6 @@ open class BotController {
         val content : String = httpController.makeContentGET(
                 urlDealer.getUpdates, Charset.defaultCharset())
 
-        return modelParser.parseUpdates(content) ?: emptyList()
+        return modelParser.parseUpdates(content)
     }
 }
