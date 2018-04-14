@@ -3,6 +3,7 @@ package telegrambot.controller
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import telegrambot.UrlDealer
+import telegrambot.model.Message
 import telegrambot.model.Update
 import telegrambot.model.User
 import telegrambot.parsers.ModelParser
@@ -33,8 +34,10 @@ open class BotController {
         return modelParser.parseUpdates(content)
     }
 
-//    open fun sendMessage(chatId : Int, message : String) : Message {
-//        return httpController.makeResponseGET(
-//                "${urlDealer.sendMessage}?chat_id=$chatId&text=$message")
-//    }
+    open fun sendMessage(chatId : Int, message : String) : Message {
+        val content = httpController.makeContentGET(
+                "${urlDealer.sendMessage}?chat_id=$chatId&text=$message", Charset.defaultCharset())
+
+        return modelParser.parseMessageResponse(content)
+    }
 }

@@ -2,6 +2,7 @@ package telegrambot
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import telegrambot.configs.RemoteConfig
 import javax.annotation.PostConstruct
 
 

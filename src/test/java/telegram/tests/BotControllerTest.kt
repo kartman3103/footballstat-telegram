@@ -4,13 +4,16 @@ import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
 import telegrambot.Application
 import telegrambot.controller.BotController
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = arrayOf(Application::class))
+@TestPropertySource(locations= arrayOf("classpath:config/test-data.properties"))
 class BotControllerTest {
     @Autowired
     private lateinit var botController : BotController
@@ -30,8 +33,15 @@ class BotControllerTest {
         Assert.assertNotNull(updates)
     }
 
+    @Value("\${test.chat.id}")
+    private var chatId : Int? = null
+
     @Test
     fun botSendMessage() {
-//        val response = botController.sendMessage()
+        val message = botController.sendMessage(chatId ?:
+                throw IllegalArgumentException("Chat id cannot be null"), "Message")
+
+        Assert.assertNotNull(message)
+        Assert.assertEquals("Message", message.text)
     }
 }
