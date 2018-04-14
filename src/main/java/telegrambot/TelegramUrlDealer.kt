@@ -2,12 +2,12 @@ package telegrambot
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import telegrambot.configs.RemoteConfig
+import telegrambot.config.RemoteConfig
 import javax.annotation.PostConstruct
 
 
 @Component
-open class UrlDealer {
+open class TelegramUrlDealer {
     @Autowired
     private lateinit var remoteConfig : RemoteConfig
 

@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
 import telegrambot.Application
-import telegrambot.UrlDealer
+import telegrambot.TelegramUrlDealer
 import telegrambot.controller.HttpController
 import java.io.ByteArrayOutputStream
 import java.nio.charset.Charset
@@ -22,11 +22,11 @@ class HttpRequestTest {
     private lateinit var httpController : HttpController
 
     @Autowired
-    private lateinit var urlDealer : UrlDealer
+    private lateinit var telegramUrlDealer: TelegramUrlDealer
 
     @Test
     fun pingTest() {
-        val response = httpController.makeResponseGET(urlDealer.getMe)
+        val response = httpController.makeResponseGET(telegramUrlDealer.getMe)
 
         val output = ByteArrayOutputStream()
         response.entity.writeTo(output)
@@ -44,7 +44,7 @@ class HttpRequestTest {
 
     @Test
     fun getUpdatesTest() {
-        val response = httpController.makeResponseGET(urlDealer.getUpdates)
+        val response = httpController.makeResponseGET(telegramUrlDealer.getUpdates)
         val output = ByteArrayOutputStream()
         response.entity.writeTo(output)
 
@@ -60,7 +60,7 @@ class HttpRequestTest {
     @Test
     fun sendMessageTest() {
         val message = "Welcome+to+football+statistic+world"
-        val response = httpController.makeResponseGET("${urlDealer.sendMessage}?chat_id=$chatId&text=$message")
+        val response = httpController.makeResponseGET("${telegramUrlDealer.sendMessage}?chat_id=$chatId&text=$message")
 
         val output = ByteArrayOutputStream()
         response.entity.writeTo(output)

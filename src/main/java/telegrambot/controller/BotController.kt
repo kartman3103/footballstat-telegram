@@ -2,7 +2,7 @@ package telegrambot.controller
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import telegrambot.UrlDealer
+import telegrambot.TelegramUrlDealer
 import telegrambot.model.Message
 import telegrambot.model.Update
 import telegrambot.model.User
@@ -15,28 +15,28 @@ open class BotController {
     private lateinit var httpController : HttpController
 
     @Autowired
-    private lateinit var urlDealer : UrlDealer
+    private lateinit var telegramUrlDealer: TelegramUrlDealer
 
     @Autowired
     private lateinit var modelParser : ModelParser
 
     open fun getMe() : User? {
         val content : String = httpController.makeContentGET(
-                urlDealer.getMe, Charset.defaultCharset())
+                telegramUrlDealer.getMe, Charset.defaultCharset())
 
         return modelParser.parseUserResponse(content)
     }
 
     open fun getUpdates() : List<Update> {
         val content : String = httpController.makeContentGET(
-                urlDealer.getUpdates, Charset.defaultCharset())
+                telegramUrlDealer.getUpdates, Charset.defaultCharset())
 
         return modelParser.parseUpdates(content)
     }
 
     open fun sendMessage(chatId : Int, message : String) : Message {
         val content = httpController.makeContentGET(
-                "${urlDealer.sendMessage}?chat_id=$chatId&text=$message", Charset.defaultCharset())
+                "${telegramUrlDealer.sendMessage}?chat_id=$chatId&text=$message", Charset.defaultCharset())
 
         return modelParser.parseMessageResponse(content)
     }
