@@ -2,7 +2,7 @@ package telegrambot.controller
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import telegrambot.TelegramUrlDealer
+import telegrambot.url.TelegramUrlDealer
 import telegrambot.model.Message
 import telegrambot.model.Update
 import telegrambot.model.User
