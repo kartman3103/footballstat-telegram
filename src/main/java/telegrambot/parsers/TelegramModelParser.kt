@@ -10,7 +10,7 @@ import telegrambot.model.User
 import java.util.*
 
 @Component
-open class ModelParser {
+open class TelegramModelParser {
     private val requiredNode = { name : String, jsonNode : JsonNode -> jsonNode.get(name) ?:
             throw ModelInvalidationException("Cannot find json node with name: $name")
     }

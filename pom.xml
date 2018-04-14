@@ -17,6 +17,17 @@
         <spring.boot.version>1.5.3.RELEASE</spring.boot.version>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>footballstat-api-mvn-repo</id>
+            <url>https://raw.github.com/kartman3103/footballstat-api/mvn-repo/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -24,6 +35,12 @@
     </parent>
 
     <dependencies>
+        <dependency>
+            <groupId>footballstat</groupId>
+            <artifactId>footballstat-api</artifactId>
+            <version>1.0-RELEASE</version>
+        </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

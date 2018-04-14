@@ -12,21 +12,21 @@ import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
 import telegrambot.Application
 import telegrambot.parsers.ModelInvalidationException
-import telegrambot.parsers.ModelParser
+import telegrambot.parsers.TelegramModelParser
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = arrayOf(Application::class))
 @TestPropertySource(locations= arrayOf("classpath:config/test-data.properties"))
 class ModelParserTest {
     @Autowired
-    private lateinit var modelParser : ModelParser
+    private lateinit var telegramModelParser: TelegramModelParser
 
     @Value("\${correct.user}")
     private val correctUser : String? = null
 
     @Test
     fun userParserTest() {
-        val user = modelParser.parseUserResponse(correctUser ?: "")
+        val user = telegramModelParser.parseUserResponse(correctUser ?: "")
 
         Assert.assertNotNull(user)
         Assert.assertEquals(414309712L, user.id)
@@ -44,7 +44,7 @@ class ModelParserTest {
 
     @Test
     fun messageParserTest() {
-        val message = modelParser.parseMessageResponse(correctMessage ?: "")
+        val message = telegramModelParser.parseMessageResponse(correctMessage ?: "")
 
         Assert.assertNotNull(message)
         Assert.assertEquals(5L, message.id)
@@ -65,7 +65,7 @@ class ModelParserTest {
 
     @Test
     fun messageWithoutUserTest() {
-        val message = modelParser.parseMessageResponse(correctMessageNotUser ?: "")
+        val message = telegramModelParser.parseMessageResponse(correctMessageNotUser ?: "")
 
         Assert.assertNotNull(message)
         Assert.assertNotNull(message.chat)
@@ -83,7 +83,7 @@ class ModelParserTest {
 
     @Test
     fun updateResponseTest() {
-        val updates = modelParser.parseUpdates(correctUpdateResponse ?: "")
+        val updates = telegramModelParser.parseUpdates(correctUpdateResponse ?: "")
 
         Assert.assertNotNull(updates)
         Assert.assertTrue(updates.size == 1)
@@ -105,7 +105,7 @@ class ModelParserTest {
 
     @Test
     fun emptyUpdatesResponseTest() {
-        val updates = modelParser.parseUpdates(emptyUpdatesResponse ?: "")
+        val updates = telegramModelParser.parseUpdates(emptyUpdatesResponse ?: "")
 
         Assert.assertNotNull(updates)
         Assert.assertNotNull(updates)
@@ -117,27 +117,27 @@ class ModelParserTest {
 
     @Test
     fun sendMessageResponseTest() {
-        val message = modelParser.parseMessageResponse(correctSendedMessageResponse ?: "")
+        val message = telegramModelParser.parseMessageResponse(correctSendedMessageResponse ?: "")
     }
 
     @Test(expected = JsonMappingException::class)
-    fun emptyStringUserTest() { modelParser.parseUserResponse("") }
+    fun emptyStringUserTest() { telegramModelParser.parseUserResponse("") }
 
     @Test(expected = JsonParseException::class)
-    fun incorrectUserJsonTest() { modelParser.parseUserResponse("{\"das\"") }
+    fun incorrectUserJsonTest() { telegramModelParser.parseUserResponse("{\"das\"") }
 
     @Test(expected = JsonMappingException::class)
-    fun emptyMessageTest() { modelParser.parseMessageResponse("") }
+    fun emptyMessageTest() { telegramModelParser.parseMessageResponse("") }
 
     @Test(expected = JsonMappingException::class)
-    fun emptyStringUpdateTest() { modelParser.parseUpdates("") }
+    fun emptyStringUpdateTest() { telegramModelParser.parseUpdates("") }
 
     @Test(expected = JsonParseException::class)
-    fun incorrectJsonUpdateResponseTest() { modelParser.parseUpdates("{\"das\"") }
+    fun incorrectJsonUpdateResponseTest() { telegramModelParser.parseUpdates("{\"das\"") }
 
     @Value("\${incorrect.user.without.id}")
     private val incorrectUserWithoutId : String? = null
 
     @Test(expected = ModelInvalidationException::class)
-    fun incorrectUserWithouIdTest() { modelParser.parseUserResponse(incorrectUserWithoutId ?: "") }
+    fun incorrectUserWithouIdTest() { telegramModelParser.parseUserResponse(incorrectUserWithoutId ?: "") }
 }
