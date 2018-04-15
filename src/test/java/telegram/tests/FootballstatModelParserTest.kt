@@ -1,8 +1,10 @@
 package telegram.tests
 
+import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
@@ -16,8 +18,14 @@ class FootballstatModelParserTest {
     @Autowired
     private lateinit var footballstatModelParser : FootballstatModelParser
 
+    @Value("\${available.leagues}")
+    var availableLeagues : String? = null
+
     @Test
     fun parseAvailableLeaguesTest() {
+        val availableLeagues = footballstatModelParser.parseAvailableLeagues(availableLeagues ?: "")
 
+        Assert.assertNotNull(availableLeagues)
+        Assert.assertTrue(availableLeagues.isNotEmpty())
     }
 }

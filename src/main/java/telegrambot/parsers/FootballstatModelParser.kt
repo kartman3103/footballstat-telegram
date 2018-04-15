@@ -1,19 +1,17 @@
 package telegrambot.parsers
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import model.football.LeagueInfo
 import org.springframework.stereotype.Component
-import java.util.*
 
 @Component
 class FootballstatModelParser {
+    val mapper = jacksonObjectMapper()
+
     fun parseAvailableLeagues(json : String) : List<LeagueInfo> {
-        val result = ArrayList<LeagueInfo>()
-        val leagues : ArrayNode = ObjectMapper().readTree(json) as ArrayNode
-        for (league in leagues.elements()) {
-            result.add(ObjectMapper().treeToValue(league, LeagueInfo::class.java))
-        }
-        return result
+        val typeReference : TypeReference<List<LeagueInfo>> =
+                object : TypeReference<List<LeagueInfo>>(){}
+        return mapper.readValue(json, typeReference)
     }
 }
