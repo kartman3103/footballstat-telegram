@@ -1,5 +1,8 @@
 package telegram.tests
 
+import org.apache.http.HttpHost
+import org.apache.http.client.fluent.Executor
+import org.apache.http.client.fluent.Request
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -9,8 +12,8 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
 import telegrambot.Application
-import telegrambot.url.TelegramUrlDealer
 import telegrambot.controller.HttpController
+import telegrambot.url.TelegramUrlDealer
 import java.io.ByteArrayOutputStream
 import java.nio.charset.Charset
 
@@ -39,19 +42,17 @@ class HttpRequestTest {
 
     @Test(expected = Exception::class)
     fun incorrectUrlPing() {
-        httpController.makeResponseGET("http://telegramIncorrectUrl:3030")
+        val result = httpController.makeResponseGET("http://telegramIncorrectUrl:3030")
+        Assert.assertNotNull(result)
     }
 
     @Test
     fun getUpdatesTest() {
-        val response = httpController.makeResponseGET(telegramUrlDealer.getUpdates)
-        val output = ByteArrayOutputStream()
-        response.entity.writeTo(output)
+        val response = httpController.makeContentGET(
+                telegramUrlDealer.getUpdates,
+                Charset.defaultCharset())
 
-        val content = output.toString(Charset.defaultCharset().name())
-
-        Assert.assertNotNull(content)
-        Assert.assertEquals(200, response.statusLine.statusCode)
+        Assert.assertNotNull(response)
     }
 
     @Value("\${test.chat.id}")
@@ -69,5 +70,18 @@ class HttpRequestTest {
 
         Assert.assertNotNull(content)
         Assert.assertEquals(200, response.statusLine.statusCode)
+    }
+
+    @Test
+    fun proxyTest() {
+        val proxyHost = HttpHost("18.217.146.114", 80)
+
+        val executor = Executor.newInstance().authPreemptive(proxyHost)
+
+        val result = executor.execute(Request.Get(telegramUrlDealer.getMe).viaProxy(proxyHost))
+                .returnContent()
+                .asString()
+
+        Assert.assertNotNull(result)
     }
 }
