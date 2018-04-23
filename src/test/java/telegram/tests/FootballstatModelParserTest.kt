@@ -28,4 +28,15 @@ class FootballstatModelParserTest {
         Assert.assertNotNull(availableLeagues)
         Assert.assertTrue(availableLeagues.isNotEmpty())
     }
+
+    @Value("\${league}")
+    var league : String? = null
+
+    @Test
+    fun parseLeagueTest() {
+        val league = footballstatModelParser.parseLeague(league ?: "")
+
+        Assert.assertNotNull(league)
+        Assert.assertEquals("426", league.id)
+    }
 }

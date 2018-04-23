@@ -9,7 +9,7 @@ open class ModelMessageBuilder {
         val stringBuilder = StringBuilder()
         for (i in 0..availableLeagues.count() - 1) {
             val league = availableLeagues[i]
-            stringBuilder.append("${i + 1}. ${league.name} /${league.shortName} \n")
+            stringBuilder.append("${i + 1}. ${league.name} /${league.id}_${league.toursPlayed} \n")
         }
         return stringBuilder.toString()
     }

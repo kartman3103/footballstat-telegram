@@ -1,3 +1,4 @@
 serverUrl : http://ec2-18-221-136-218.us-east-2.compute.amazonaws.com
 
 requestAvailableLeagues : availableLeagues
+requestLeague : league

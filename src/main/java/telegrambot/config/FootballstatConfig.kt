@@ -9,8 +9,8 @@ import org.springframework.context.annotation.PropertySource
 @PropertySource("classpath:config/footballstat.yml")
 open class FootballstatConfig {
     var serverUrl : String = "http://localhost:8080"
-        get set
 
     var requestAvailableLeagues : String = "availableLeagues"
-        get set
+
+    var requestLeague : String = "league"
 }

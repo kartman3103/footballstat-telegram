@@ -14,9 +14,12 @@ class FootballstatUrlDealer {
     fun init() {
         serverUrl = footballstatConfig.serverUrl
         availableLeaguesUrl = "${serverUrl}/${footballstatConfig.requestAvailableLeagues}"
+        league = "${serverUrl}/${footballstatConfig.requestLeague}"
     }
 
     lateinit var serverUrl : String
 
     lateinit var availableLeaguesUrl: String
+
+    lateinit var league : String
 }

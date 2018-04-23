@@ -1,6 +1,8 @@
 package telegrambot.controller
 
+import model.football.League
 import model.football.LeagueInfo
+import org.apache.http.client.utils.URIBuilder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import telegrambot.parsers.FootballstatModelParser
@@ -19,9 +21,20 @@ class FootballstatProvider {
     private lateinit var footballstatHttpController : HttpController
 
     fun availableLeagues() : List<LeagueInfo> {
-        val content = footballstatHttpController.makeContentPOST(
-                footballstatUrlDealer.availableLeaguesUrl, Charset.defaultCharset())
+        val uriBuilder = URIBuilder(footballstatUrlDealer.availableLeaguesUrl)
+        val url = uriBuilder.build().toString()
 
+        val content = footballstatHttpController.makeContentPOST(url, Charset.defaultCharset())
         return footballstatModelParser.parseAvailableLeagues(content)
+    }
+
+    fun getLeague(leagueId : String, matchDay : Int) : League {
+        val uriBuilder = URIBuilder(footballstatUrlDealer.league)
+        uriBuilder.addParameter("leagueId", leagueId)
+        uriBuilder.addParameter("matchDay", matchDay.toString())
+        val url = uriBuilder.build().toString()
+
+        val content = footballstatHttpController.makeContentPOST(url, Charset.defaultCharset())
+        return footballstatModelParser.parseLeague(content)
     }
 }

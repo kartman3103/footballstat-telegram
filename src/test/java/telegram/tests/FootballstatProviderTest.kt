@@ -22,4 +22,17 @@ class FootballstatProviderTest {
         Assert.assertNotNull(leagues)
         Assert.assertTrue(!leagues.isEmpty())
     }
+
+    @Test
+    fun getLeagueTest() {
+        val leagues = footballstatProvider.availableLeagues()
+        val firstLeague = leagues.first()
+
+        val id = firstLeague.id
+        val matchDay = firstLeague.toursPlayed
+
+        val league = footballstatProvider.getLeague(id, matchDay)
+
+        Assert.assertNotNull(league)
+    }
 }
