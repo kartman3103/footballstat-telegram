@@ -18,7 +18,6 @@ class FootballstatProviderTest {
     @Test
     fun getAvailableLeaguesTest() {
         val response = footballstatProvider.availableLeagues()
-
         Assert.assertNotNull(response)
     }
 }

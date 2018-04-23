@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
 import telegrambot.Application
+import telegrambot.config.RemoteConfig
 import telegrambot.controller.HttpController
 import telegrambot.url.TelegramUrlDealer
 import java.io.ByteArrayOutputStream
@@ -22,14 +23,17 @@ import java.nio.charset.Charset
 @TestPropertySource(locations= arrayOf("classpath:config/test-data.properties"))
 class HttpRequestTest {
     @Autowired
-    private lateinit var httpController : HttpController
+    private lateinit var telegramHttpController: HttpController
 
     @Autowired
     private lateinit var telegramUrlDealer: TelegramUrlDealer
 
+    @Autowired
+    private lateinit var remoteConfig : RemoteConfig
+
     @Test
     fun pingTest() {
-        val response = httpController.makeResponseGET(telegramUrlDealer.getMe)
+        val response = telegramHttpController.makeResponseGET(telegramUrlDealer.getMe)
 
         val output = ByteArrayOutputStream()
         response.entity.writeTo(output)
@@ -40,15 +44,9 @@ class HttpRequestTest {
         Assert.assertEquals(200, response.statusLine.statusCode)
     }
 
-    @Test(expected = Exception::class)
-    fun incorrectUrlPing() {
-        val result = httpController.makeResponseGET("http://telegramIncorrectUrl:3030")
-        Assert.assertNotNull(result)
-    }
-
     @Test
     fun getUpdatesTest() {
-        val response = httpController.makeContentGET(
+        val response = telegramHttpController.makeContentGET(
                 telegramUrlDealer.getUpdates,
                 Charset.defaultCharset())
 
@@ -61,7 +59,7 @@ class HttpRequestTest {
     @Test
     fun sendMessageTest() {
         val message = "Welcome+to+football+statistic+world"
-        val response = httpController.makeResponseGET("${telegramUrlDealer.sendMessage}?chat_id=$chatId&text=$message")
+        val response = telegramHttpController.makeResponseGET("${telegramUrlDealer.sendMessage}?chat_id=$chatId&text=$message")
 
         val output = ByteArrayOutputStream()
         response.entity.writeTo(output)
@@ -74,14 +72,12 @@ class HttpRequestTest {
 
     @Test
     fun proxyTest() {
-        val proxyHost = HttpHost("18.217.146.114", 80)
-
+        val proxyHost = HttpHost(remoteConfig.proxyIP, remoteConfig.proxyPort)
         val executor = Executor.newInstance().authPreemptive(proxyHost)
 
-        val result = executor.execute(Request.Get(telegramUrlDealer.getMe).viaProxy(proxyHost))
-                .returnContent()
-                .asString()
+        val result = executor.execute(
+                Request.Get(telegramUrlDealer.getMe).viaProxy(proxyHost)).returnResponse()
 
-        Assert.assertNotNull(result)
+        Assert.assertTrue(result.statusLine.statusCode == 200)
     }
 }

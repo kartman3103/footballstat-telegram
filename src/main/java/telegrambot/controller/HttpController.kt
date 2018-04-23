@@ -2,16 +2,10 @@ package telegrambot.controller
 
 import org.apache.http.HttpResponse
 import org.apache.http.client.fluent.Request
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Component
 import telegrambot.controller.request.RequestSender
 import java.nio.charset.Charset
 
-@Component
-open class HttpController {
-    @Autowired
-    private lateinit var requestSender : RequestSender
-
+open class HttpController(val requestSender : RequestSender) {
     fun makeResponseGET(url : String) : HttpResponse {
         return requestSender.sendRequest(Request.Get(url)).returnResponse()
     }

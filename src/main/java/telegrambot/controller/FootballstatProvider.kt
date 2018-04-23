@@ -11,10 +11,10 @@ class FootballstatProvider {
     private lateinit var footballstatUrlDealer : FootballstatUrlDealer
 
     @Autowired
-    private lateinit var httpController : HttpController
+    private lateinit var footballstatHttpController : HttpController
 
     fun availableLeagues() : String {
-        return httpController.makeContentPOST(
+        return footballstatHttpController.makeContentPOST(
                 footballstatUrlDealer.availableLeaguesUrl, Charset.defaultCharset())
     }
 }

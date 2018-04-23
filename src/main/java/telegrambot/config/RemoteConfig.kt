@@ -20,9 +20,9 @@ open class RemoteConfig {
     var useProxy : Boolean = false
         get set
 
-    var proxyIP : String = "199.247.23.227"
+    var proxyIP : String = "198.50.143.31"
         get set
 
-    var proxyPort : Int = 10080
+    var proxyPort : Int = 3128
         get set
 }
