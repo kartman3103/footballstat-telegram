@@ -1,9 +1,8 @@
-package telegrambot.controller.request
+package telegrambot.controller
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
-import telegrambot.controller.BotController
 import java.util.*
 
 @Component

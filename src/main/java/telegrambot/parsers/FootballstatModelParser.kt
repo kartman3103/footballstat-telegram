@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component
 
 @Component
 open class FootballstatModelParser {
-    val mapper = jacksonObjectMapper()
+    private val mapper = jacksonObjectMapper()
 
     fun parseAvailableLeagues(json : String) : List<LeagueInfo> {
         val typeReference : TypeReference<List<LeagueInfo>> =
