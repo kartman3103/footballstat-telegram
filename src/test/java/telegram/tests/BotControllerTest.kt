@@ -29,12 +29,27 @@ class BotControllerTest {
 
     @Test
     fun botGetUpdate() {
-        val updates = botController.getUpdates()
+        val updates = botController.getUpdates(-1)
         Assert.assertNotNull(updates)
     }
 
+    @Test
+    fun botApplyUpdates() {
+        var offset = -1
+        val updates = botController.getUpdates(offset)
+
+        Assert.assertNotNull(updates)
+
+        if (!updates.isEmpty()) {
+            offset = updates.last().id + 1
+            val repeatUpdates = botController.getUpdates(offset)
+
+            Assert.assertTrue(repeatUpdates.isEmpty())
+        }
+    }
+
     @Value("\${test.chat.id}")
-    private var chatId : Int? = null
+    private var chatId : Long? = null
 
     @Test
     fun botSendMessage() {

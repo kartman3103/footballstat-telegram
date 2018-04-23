@@ -36,9 +36,6 @@ class ModelParserTest {
         Assert.assertEquals("ru", user.languageCode)
     }
 
-    @Value("\${correct.chat}")
-    private val correctChat : String? = null
-
     @Value("\${correct.message}")
     private val correctMessage : String? = null
 
@@ -75,9 +72,6 @@ class ModelParserTest {
         Assert.assertNull(message.from)
     }
 
-    @Value("\${correct.update}")
-    private val correctUpdate : String? = null
-
     @Value("\${correct.update.response}")
     private val correctUpdateResponse : String? = null
 
@@ -90,14 +84,14 @@ class ModelParserTest {
 
         val firstUpdate = updates[0]
         Assert.assertNotNull(firstUpdate)
-        Assert.assertEquals(540766782L, firstUpdate.id)
+        Assert.assertEquals(540766782, firstUpdate.id)
 
         val updateMessage = firstUpdate.message
         Assert.assertNotNull(updateMessage)
-        Assert.assertEquals(5L, updateMessage ?.id)
-        Assert.assertEquals(1523021455, updateMessage?.date)
+        Assert.assertEquals(5L, updateMessage.id)
+        Assert.assertEquals(1523021455, updateMessage.date)
 
-        Assert.assertNotNull(updateMessage?.chat)
+        Assert.assertNotNull(updateMessage.chat)
     }
 
     @Value("\${correct.update.response.empty}")
@@ -117,7 +111,7 @@ class ModelParserTest {
 
     @Test
     fun sendMessageResponseTest() {
-        val message = telegramModelParser.parseMessageResponse(correctSendedMessageResponse ?: "")
+        telegramModelParser.parseMessageResponse(correctSendedMessageResponse ?: "")
     }
 
     @Test(expected = JsonMappingException::class)

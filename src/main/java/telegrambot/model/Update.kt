@@ -1,3 +1,3 @@
 package telegrambot.model
 
-data class Update(val id : Long, val message: Message? = null)
+data class Update(val id : Int, val message: Message)

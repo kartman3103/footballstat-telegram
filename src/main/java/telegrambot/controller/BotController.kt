@@ -27,14 +27,14 @@ open class BotController {
         return telegramModelParser.parseUserResponse(content)
     }
 
-    open fun getUpdates() : List<Update> {
+    open fun getUpdates(offset : Int) : List<Update> {
         val content : String = telegramHttpController.makeContentGET(
-                telegramUrlDealer.getUpdates, Charset.defaultCharset())
+                "${telegramUrlDealer.getUpdates}?offset=$offset", Charset.defaultCharset())
 
         return telegramModelParser.parseUpdates(content)
     }
 
-    open fun sendMessage(chatId : Int, message : String) : Message {
+    open fun sendMessage(chatId : Long, message : String) : Message {
         val content = telegramHttpController.makeContentGET(
                 "${telegramUrlDealer.sendMessage}?chat_id=$chatId&text=$message", Charset.defaultCharset())
 

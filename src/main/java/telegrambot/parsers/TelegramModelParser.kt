@@ -81,7 +81,7 @@ open class TelegramModelParser {
     private fun parseUpdate(jsonNode: JsonNode) : Update {
         return jsonNode.let {
             Update(
-                requiredNode("update_id", it).longValue(),
+                requiredNode("update_id", it).intValue(),
                 parseMessage(requiredNode("message", it))
             )
         }
