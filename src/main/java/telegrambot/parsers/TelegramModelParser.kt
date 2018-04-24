@@ -11,18 +11,6 @@ import java.util.*
 
 @Component
 open class TelegramModelParser {
-    private val requiredNode = { name : String, jsonNode : JsonNode -> jsonNode.get(name) ?:
-            throw ModelInvalidationException("Cannot find json node with name: $name")
-    }
-
-    private val node = {
-        name : String, jsonNode : JsonNode -> jsonNode.get(name)
-    }
-
-    private val parseResult = {
-        json : String -> requiredNode("result", ObjectMapper().readTree(json))
-    }
-
     val parseUserResponse = {
         json : String -> parseResult(json).let { parseUser(it) }
     }

@@ -12,10 +12,6 @@ import telegrambot.model.football.TTeam
 open class FootballstatModelParser {
     private val mapper = jacksonObjectMapper()
 
-    private val requiredNode = { name : String, jsonNode : JsonNode -> jsonNode.get(name) ?:
-            throw ModelInvalidationException("Cannot find json node with name: $name")
-    }
-
     fun parseAvailableLeagues(json : String) : List<LeagueInfo> {
         val typeReference : TypeReference<List<LeagueInfo>> =
                 object : TypeReference<List<LeagueInfo>>(){}
