@@ -7,5 +7,5 @@ useProxy : true
 proxyIP : 18.217.146.114
 proxyPort : 80
 
-proxyConnectionTimeout : 3000
-proxySocketTimeout : 3000
+proxyConnectionTimeout : 10000
+proxySocketTimeout : 10000
