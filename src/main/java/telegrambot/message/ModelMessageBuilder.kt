@@ -16,7 +16,7 @@ open class ModelMessageBuilder {
     }
 
     fun leagueMessage(league : TLeague) : String {
-        val stringBuilder = StringBuilder("${league.name} \n")
+        val stringBuilder = StringBuilder("<b>${league.name}</b> \n")
         league.teams.forEach {
             stringBuilder.append("${it.position}. ${it.name} - ${it.points} \n")
         }

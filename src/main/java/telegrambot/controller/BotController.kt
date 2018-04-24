@@ -38,10 +38,11 @@ open class BotController {
         return telegramModelParser.parseUpdates(content)
     }
 
-    open fun sendMessage(chatId : Long, message : String) : Message {
+    open fun sendMessage(chatId : Long, message : String, parseMode : String = "HTML") : Message {
         val uriBuilder = URIBuilder(telegramUrlDealer.sendMessage)
         uriBuilder.addParameter("chat_id", chatId.toString())
         uriBuilder.addParameter("text", message)
+        uriBuilder.addParameter("parse_mode", parseMode)
 
         val url = uriBuilder.build().toString()
         val content = telegramHttpController.makeContentGET(url, Charset.defaultCharset())
