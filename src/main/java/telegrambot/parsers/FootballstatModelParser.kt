@@ -1,18 +1,19 @@
 package telegrambot.parsers
 
 import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.MapperFeature
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import model.football.League
 import model.football.LeagueInfo
 import org.springframework.stereotype.Component
+import telegrambot.model.football.TLeague
+import telegrambot.model.football.TTeam
 
 @Component
 open class FootballstatModelParser {
     private val mapper = jacksonObjectMapper()
 
-    init {
-        mapper.configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true)
+    private val requiredNode = { name : String, jsonNode : JsonNode -> jsonNode.get(name) ?:
+            throw ModelInvalidationException("Cannot find json node with name: $name")
     }
 
     fun parseAvailableLeagues(json : String) : List<LeagueInfo> {
@@ -21,8 +22,25 @@ open class FootballstatModelParser {
         return mapper.readValue(json, typeReference)
     }
 
-    fun parseLeague(json : String) : League {
-        val typeReference : TypeReference<League> = object : TypeReference<League>(){}
-        return mapper.readValue(json, typeReference)
+    fun parseLeague(json : String) : TLeague {
+        return mapper.readTree(json).let {
+            TLeague(
+                requiredNode("name", it).textValue(),
+                requiredNode("matchDay", it).intValue(),
+                requiredNode("teams", it).map {
+                    parseTeam(it)
+                }
+            )
+        }
+    }
+
+    private fun parseTeam(it: JsonNode): TTeam {
+        val allStatistic = it.get("allStatistic")
+        return TTeam(
+            Integer.parseInt(requiredNode("id", it).textValue()),
+            requiredNode("name", it).textValue(),
+            requiredNode("position", allStatistic).intValue(),
+            requiredNode("points", allStatistic).intValue()
+        )
     }
 }

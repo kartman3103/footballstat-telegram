@@ -1,10 +1,10 @@
 package telegrambot.controller
 
-import model.football.League
 import model.football.LeagueInfo
 import org.apache.http.client.utils.URIBuilder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import telegrambot.model.football.TLeague
 import telegrambot.parsers.FootballstatModelParser
 import telegrambot.url.FootballstatUrlDealer
 import java.nio.charset.Charset
@@ -28,7 +28,7 @@ class FootballstatProvider {
         return footballstatModelParser.parseAvailableLeagues(content)
     }
 
-    fun getLeague(leagueId : String, matchDay : Int) : League {
+    fun getLeague(leagueId : String, matchDay : Int) : TLeague {
         val uriBuilder = URIBuilder(footballstatUrlDealer.league)
         uriBuilder.addParameter("leagueId", leagueId)
         uriBuilder.addParameter("matchDay", matchDay.toString())

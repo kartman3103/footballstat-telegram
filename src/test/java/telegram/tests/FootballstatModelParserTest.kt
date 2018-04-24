@@ -37,6 +37,15 @@ class FootballstatModelParserTest {
         val league = footballstatModelParser.parseLeague(league ?: "")
 
         Assert.assertNotNull(league)
-        Assert.assertEquals("426", league.id)
+        Assert.assertEquals("Premier League 2016/17", league.name)
+        Assert.assertEquals(38, league.matchDay)
+        Assert.assertTrue(!league.teams.isEmpty())
+
+        val team = league.teams[0]
+        Assert.assertNotNull(team)
+        Assert.assertEquals(61, team.id)
+        Assert.assertEquals("Chelsea FC", team.name)
+        Assert.assertEquals(1, team.position)
+        Assert.assertEquals(93, team.points)
     }
 }

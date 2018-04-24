@@ -7,7 +7,7 @@ import telegrambot.message.ModelMessageBuilder
 import java.util.*
 
 @Component
-class UpdatesScheduler {
+open class UpdatesScheduler {
     @Autowired
     private lateinit var botController : BotController
 
