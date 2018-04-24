@@ -6,3 +6,6 @@ token : AAGMICSbEDmvQGVndGJuzdPwq3Cfzo0qjNo
 useProxy : true
 proxyIP : 18.217.146.114
 proxyPort : 80
+
+proxyConnectionTimeout : 3000
+proxySocketTimeout : 3000

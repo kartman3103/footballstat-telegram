@@ -25,4 +25,10 @@ open class RemoteConfig {
 
     var proxyPort : Int = 3128
         get set
+
+    var proxyConnectionTimeout : Int = 1000
+        get set
+
+    var proxySocketTimeout : Int = 1000
+        get set
 }

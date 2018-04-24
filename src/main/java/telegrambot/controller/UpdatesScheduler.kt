@@ -24,13 +24,24 @@ open class UpdatesScheduler {
         val updates = botController.getUpdates(offset)
 
         if (!updates.isEmpty()) {
-            val update = updates.last()
-            if (Objects.equals(update.message.text, "/availableleagues")) {
-                val availableLeagues = footballstatProvider.availableLeagues()
-                val formattedLeagues = modelMessageBuilder.getMessage(availableLeagues)
+            updates.forEach {
+                if (Objects.equals(it.message.text, "/availableleagues")) {
+                    val availableLeagues = footballstatProvider.availableLeagues()
+                    val formattedLeagues = modelMessageBuilder.availableLeaguesMessage(availableLeagues)
 
-                botController.sendMessage(update.message.chat.id, formattedLeagues)
-                offset = updates.last().id + 1
+                    botController.sendMessage(it.message.chat.id, formattedLeagues)
+
+                }
+                else {
+                    val parts = it.message.text?.split("_")
+                    if (parts != null && parts[0] == "/lg") {
+                        val league = footballstatProvider.getLeague(parts[1], Integer.parseInt(parts[2]))
+                        val formattedLeague = modelMessageBuilder.leagueMessage(league)
+
+                        botController.sendMessage(it.message.chat.id, formattedLeague)
+                    }
+                }
+                offset = it.id + 1
             }
         }
     }
