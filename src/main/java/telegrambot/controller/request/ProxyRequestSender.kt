@@ -27,7 +27,7 @@ open class ProxyRequestSender : RequestSender {
             return proxyExecutor.execute(request.viaProxy(proxyHost))
         }
         catch (ex : Exception) {
-            logger.error("Unsuccessfull request: ", ex)
+            logger.error("Unsuccessfull request. ${ex.message} Request: $request")
             throw ex
         }
     }
